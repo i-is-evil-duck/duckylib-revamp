@@ -1,0 +1,91 @@
+# DuckyLib Built-in Config Screen Example
+
+[meta]
+name = "DuckyLibConfig"
+theme = "default"
+
+[[widget]]
+type = "panel"
+id = "root_panel"
+x = 0
+y = 0
+width = 400
+height = 300
+background = "#1e1e1e"
+border = "#2f3136"
+border_width = 1
+
+  [[widget.children]]
+  type = "label"
+  id = "title"
+  x = 150
+  y = 15
+  text = "DuckyLib Settings"
+  scale = 1.5
+  color = "#dcddde"
+
+  [[widget.children]]
+  type = "label"
+  id = "subtitle"
+  x = 100
+  y = 45
+  text = "Configure your DuckyLib experience"
+  color = "#96989d"
+
+  [[widget.children]]
+  type = "checkbox"
+  id = "show_tooltips"
+  x = 50
+  y = 80
+  label = "Show Tooltips"
+  default = true
+
+  [[widget.children]]
+  type = "slider"
+  id = "ui_scale"
+  x = 50
+  y = 110
+  width = 200
+  min = 0.5
+  max = 2.0
+  step = 0.1
+  default = 1.0
+  label = "UI Scale: {value}"
+
+  [[widget.children]]
+  type = "dropdown"
+  id = "theme_select"
+  x = 50
+  y = 150
+  width = 150
+  height = 20
+  options = ["default", "light", "high_contrast"]
+  default_index = 0
+
+  [[widget.children]]
+  type = "textfield"
+  id = "player_name"
+  x = 50
+  y = 190
+  width = 200
+  height = 20
+  placeholder = "Enter your name..."
+
+  [[widget.children]]
+  type = "button"
+  id = "save_button"
+  x = 50
+  y = 240
+  width = 80
+  height = 24
+  label = "Save"
+  style = "primary"
+
+  [[widget.children]]
+  type = "button"
+  id = "cancel_button"
+  x = 150
+  y = 240
+  width = 80
+  height = 24
+  label = "Cancel"

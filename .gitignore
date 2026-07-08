@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.class
+*.log
+
+# Eclipse
+.settings/
+.project
+.classpath
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Minecraft Forge
+run/
+eclipse/
+out/
+
+# Environment
+.env
+*.local

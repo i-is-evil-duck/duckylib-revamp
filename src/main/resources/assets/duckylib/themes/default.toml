@@ -1,0 +1,55 @@
+# DuckyLib Default Theme - Modern Flat Dark
+# Discord-inspired color palette
+
+[colors]
+background = "#121212"
+panel_bg = "#1e1e1e"
+panel_bg_hover = "#252525"
+primary = "#5865f2"
+primary_hover = "#4752c4"
+primary_active = "#3c45a5"
+text = "#dcddde"
+text_secondary = "#96989d"
+text_disabled = "#4f545c"
+border = "#2f3136"
+border_focused = "#5865f2"
+error = "#ed4245"
+success = "#57f287"
+warning = "#fee75c"
+
+# Widget-specific colors
+slider.track_color = "#2f3136"
+slider.fill_color = "#5865f2"
+slider.thumb_color = "#ffffff"
+checkbox.check_color = "#5865f2"
+textfield.background = "#2f3136"
+textfield.background_focused = "#383a40"
+textfield.cursor_color = "#dcddde"
+
+[fonts]
+default = "minecraft:default"
+title_size = 16
+body_size = 12
+small_size = 10
+
+[button]
+padding_x = 8
+padding_y = 4
+border_radius = 4
+
+[textfield]
+padding = 6
+cursor_color = "#ffffff"
+selection_color = "#5865f280"
+
+[slider]
+track_height = 6
+thumb_size = 14
+
+[checkbox]
+box_size = 14
+check_color = "#5865f2"
+
+[dropdown]
+max_height = 120
+item_height = 20
