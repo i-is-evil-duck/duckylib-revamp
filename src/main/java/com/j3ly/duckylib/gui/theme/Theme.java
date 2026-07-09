@@ -116,7 +116,7 @@ public class Theme {
         return (T) cat.getOrDefault(key, defaultValue);
     }
 
-    private static int parseColor(String hex) {
+    public static int parseColor(String hex) {
         if (hex.startsWith("#")) hex = hex.substring(1);
         if (hex.length() == 6) hex = "FF" + hex;
         return (int) Long.parseLong(hex, 16);

@@ -5,7 +5,7 @@ import com.j3ly.duckylib.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.SharedConstants;
+import net.minecraft.SharedConstants;
 
 public class TextField extends Widget {
     private String value = "";

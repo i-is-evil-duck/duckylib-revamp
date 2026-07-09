@@ -89,7 +89,7 @@ public class LayoutLoader {
                 float min = toml.getDouble("min", 0.0).floatValue();
                 float max = toml.getDouble("max", 1.0).floatValue();
                 float step = toml.getDouble("step", 0.1).floatValue();
-                float defaultVal = toml.getDouble("default", min).floatValue();
+                float defaultVal = toml.getDouble("default", (double) min).floatValue();
                 Slider slider = new Slider(id, x, y, width, min, max, step, defaultVal);
                 if (toml.contains("label")) slider.setLabel(toml.getString("label"));
                 return slider;
