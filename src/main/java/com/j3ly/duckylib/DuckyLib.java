@@ -1,13 +1,16 @@
 package com.j3ly.duckylib;
 
+import com.j3ly.duckylib.editor.EditorOverlay;
 import com.j3ly.duckylib.editor.commands.EditorCommand;
 import com.j3ly.duckylib.gui.DuckyScreen;
 import com.j3ly.duckylib.gui.theme.Theme;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterClientCommandsEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -38,6 +41,15 @@ public class DuckyLib {
     @SubscribeEvent
     public void onRegisterClientCommands(RegisterClientCommandsEvent event) {
         EditorCommand.register(event.getDispatcher());
+    }
+
+    @SubscribeEvent
+    public void onScreenRenderPost(ScreenEvent.Render.Post event) {
+        if (!(event.getScreen() instanceof DuckyScreen)) return;
+        GuiGraphics graphics = event.getGuiGraphics();
+        int mouseX = (int) (event.getMouseX());
+        int mouseY = (int) (event.getMouseY());
+        EditorOverlay.render(graphics, mouseX, mouseY, event.getPartialTick());
     }
 
     public static DuckyScreen loadLayout(ResourceLocation location) {

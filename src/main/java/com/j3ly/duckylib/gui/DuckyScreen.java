@@ -83,8 +83,6 @@ public class DuckyScreen extends Screen {
             rootWidget.render(graphics, mouseX, mouseY, partialTick);
         }
 
-        EditorOverlay.render(graphics, mouseX, mouseY, partialTick);
-
         super.render(graphics, mouseX, mouseY, partialTick);
     }
 

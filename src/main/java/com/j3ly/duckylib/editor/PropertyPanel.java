@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 public class PropertyPanel {
     private int x, y, width, height;
     private Widget target;
-    private boolean visible = false;
+    private boolean visible = true;
     private int editingX, editingY, editingW, editingH;
 
     public PropertyPanel() {

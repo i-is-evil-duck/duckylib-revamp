@@ -91,6 +91,13 @@ dependencies {
 }
 
 jar {
+    from {
+        configurations.runtimeClasspath.findAll { it.name.contains("toml4j") }.collect { zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+jar {
     manifest {
         attributes([
                 "Specification-Title"     : "duckylib",

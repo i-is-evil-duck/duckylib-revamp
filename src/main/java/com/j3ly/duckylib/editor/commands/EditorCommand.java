@@ -3,7 +3,7 @@ package com.j3ly.duckylib.editor.commands;
 import com.j3ly.duckylib.DuckyLib;
 import com.j3ly.duckylib.editor.EditorOverlay;
 import com.j3ly.duckylib.gui.DuckyScreen;
-import com.j3ly.duckylib.gui.widget.Widget;
+import com.j3ly.duckylib.gui.widget.*;
 import com.j3ly.duckylib.layout.LayoutSerializer;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -16,14 +16,11 @@ import java.io.File;
 
 public class EditorCommand {
 
+    private static DuckyScreen currentEditorScreen;
+
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("duckyeditor")
             .executes(ctx -> {
-                if (!ctx.getSource().getLevel().isClientSide) {
-                    ctx.getSource().sendFailure(Component.literal("Editor only works on client!"));
-                    return 0;
-                }
-
                 if (!Minecraft.getInstance().hasSingleplayerServer()) {
                     ctx.getSource().sendFailure(Component.literal("Editor only works in single-player!"));
                     return 0;
@@ -32,8 +29,16 @@ public class EditorCommand {
                 EditorOverlay.toggle();
 
                 if (EditorOverlay.isActive()) {
+                    if (!(Minecraft.getInstance().screen instanceof DuckyScreen)) {
+                        currentEditorScreen = createEditorScreen();
+                        Minecraft.getInstance().setScreen(currentEditorScreen);
+                    }
                     ctx.getSource().sendSuccess(() -> Component.literal("§a[DuckyLib] Editor enabled. Click widgets to edit."), false);
                 } else {
+                    if (Minecraft.getInstance().screen == currentEditorScreen) {
+                        Minecraft.getInstance().setScreen(null);
+                        currentEditorScreen = null;
+                    }
                     ctx.getSource().sendSuccess(() -> Component.literal("§c[DuckyLib] Editor disabled."), false);
                 }
                 return 1;
@@ -77,6 +82,28 @@ public class EditorCommand {
         );
 
         dispatcher.register(Commands.literal("de").redirect(dispatcher.getRoot().getChild("duckyeditor")));
+    }
+
+    private static DuckyScreen createEditorScreen() {
+        Panel root = new Panel("root", 0, 0, 0, 0);
+
+        Label title = new Label("title", 20, 20, "DuckyLib Editor");
+        title.setScale(2.0f);
+        title.setCentered(false);
+        root.addChild(title);
+
+        Label hint = new Label("hint", 20, 50, "Add or edit widgets using the property panel on the right.");
+        hint.setCentered(false);
+        root.addChild(hint);
+
+        Button demoButton = new Button("demo_btn", 20, 80, 120, 30, "Demo Button");
+        demoButton.setOnClick(() -> DuckyLib.LOGGER.info("Demo button clicked!"));
+        root.addChild(demoButton);
+
+        Checkbox demoCheckbox = new Checkbox("demo_cb", 20, 130, "Enable Feature");
+        root.addChild(demoCheckbox);
+
+        return DuckyScreen.fromWidget(root);
     }
 
     private static Widget getRootWidget() {

@@ -18,13 +18,13 @@ success = "#57f287"
 warning = "#fee75c"
 
 # Widget-specific colors
-slider.track_color = "#2f3136"
-slider.fill_color = "#5865f2"
-slider.thumb_color = "#ffffff"
-checkbox.check_color = "#5865f2"
-textfield.background = "#2f3136"
-textfield.background_focused = "#383a40"
-textfield.cursor_color = "#dcddde"
+"slider.track_color" = "#2f3136"
+"slider.fill_color" = "#5865f2"
+"slider.thumb_color" = "#ffffff"
+"checkbox.check_color" = "#5865f2"
+"textfield.background" = "#2f3136"
+"textfield.background_focused" = "#383a40"
+"textfield.cursor_color" = "#dcddde"
 
 [fonts]
 default = "minecraft:default"
