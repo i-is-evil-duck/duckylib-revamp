@@ -1,10 +1,12 @@
 package com.j3ly.duckylib.editor;
 
 import com.j3ly.duckylib.gui.DuckyScreen;
-import com.j3ly.duckylib.gui.widget.Widget;
+import com.j3ly.duckylib.gui.widget.*;
 import com.j3ly.duckylib.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+
+import java.util.Random;
 
 public class EditorOverlay {
     private static boolean active = false;
@@ -17,6 +19,10 @@ public class EditorOverlay {
     private static int resizeHandle = -1;
 
     private static final int HANDLE_SIZE = 6;
+
+    private static final String[] TOOLBAR_BUTTONS = {"Panel", "Button", "Label", "Checkbox", "Slider", "TextField", "Dropdown"};
+    private static final int TOOLBAR_Y = 20;
+    private static final int TOOLBAR_BTN_H = 16;
 
     public static void toggle() {
         active = !active;
@@ -49,8 +55,26 @@ public class EditorOverlay {
         }
 
         Minecraft mc = Minecraft.getInstance();
-        graphics.drawString(mc.font, "§b[DuckyLib Editor] §fClick widget to select | Drag to move | /duckyeditor to close", 5, 5, 0xFFFFFF, true);
+        graphics.drawString(mc.font, "§b[DuckyLib Editor]  §f/duckyeditor to close", 5, 5, 0xFFFFFF, true);
+
+        int sw = mc.getWindow().getGuiScaledWidth();
+        int btnX = 5;
+        RenderUtil.fill(graphics, 0, TOOLBAR_Y - 2, sw, TOOLBAR_Y + TOOLBAR_BTN_H + 2, 0xAA111111);
+
+        for (int i = 0; i < TOOLBAR_BUTTONS.length; i++) {
+            String label = TOOLBAR_BUTTONS[i];
+            int btnW = mc.font.width(label) + 12;
+            boolean hover = mouseX >= btnX && mouseX < btnX + btnW && mouseY >= TOOLBAR_Y && mouseY < TOOLBAR_Y + TOOLBAR_BTN_H;
+            int col = hover ? 0xFF5865F2 : 0xFF2f3136;
+            RenderUtil.fill(graphics, btnX, TOOLBAR_Y, btnX + btnW, TOOLBAR_Y + TOOLBAR_BTN_H, col);
+            RenderUtil.drawBorder(graphics, btnX, TOOLBAR_Y, btnW, TOOLBAR_BTN_H, 1, 0xFF1e1e1e);
+            graphics.drawString(mc.font, "+" + label, btnX + 6, TOOLBAR_Y + 4, 0xFFdcddde, false);
+            toolbarBtnBounds[i] = new int[]{btnX, btnX + btnW};
+            btnX += btnW + 4;
+        }
     }
+
+    private static int[][] toolbarBtnBounds = new int[TOOLBAR_BUTTONS.length][2];
 
     private static void drawHandle(GuiGraphics graphics, int x, int y) {
         RenderUtil.fill(graphics, x, y, x + HANDLE_SIZE, y + HANDLE_SIZE, 0xFFFFFFFF);
@@ -60,8 +84,20 @@ public class EditorOverlay {
     public static boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (!active) return false;
 
-        if (propertyPanel != null && propertyPanel.mouseClicked(mouseX, mouseY, button)) {
-            return true;
+        if (propertyPanel != null) {
+            if (propertyPanel.contains(mouseX, mouseY)) {
+                return propertyPanel.mouseClicked(mouseX, mouseY, button);
+            }
+            propertyPanel.clickedOutside();
+        }
+
+        if (mouseY >= TOOLBAR_Y && mouseY < TOOLBAR_Y + TOOLBAR_BTN_H) {
+            for (int i = 0; i < TOOLBAR_BUTTONS.length; i++) {
+                if (mouseX >= toolbarBtnBounds[i][0] && mouseX < toolbarBtnBounds[i][1]) {
+                    addWidget(TOOLBAR_BUTTONS[i]);
+                    return true;
+                }
+            }
         }
 
         if (selectedWidget != null) {
@@ -140,6 +176,16 @@ public class EditorOverlay {
         return false;
     }
 
+    public static boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (!active) return false;
+        return propertyPanel != null && propertyPanel.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    public static boolean charTyped(char codePoint, int modifiers) {
+        if (!active) return false;
+        return propertyPanel != null && propertyPanel.charTyped(codePoint, modifiers);
+    }
+
     private static boolean isHandleHit(double mx, double my, int hx, int hy) {
         return mx >= hx && mx < hx + HANDLE_SIZE && my >= hy && my < hy + HANDLE_SIZE;
     }
@@ -164,5 +210,45 @@ public class EditorOverlay {
         return null;
     }
 
+    private static void addWidget(String type) {
+        Widget root = getRootScreen();
+        if (root == null) return;
+
+        Widget w = null;
+        int bx = 40 + new Random().nextInt(100);
+        int by = 60 + new Random().nextInt(100);
+
+        switch (type) {
+            case "Panel":
+                w = new Panel("panel_" + System.currentTimeMillis(), bx, by, 200, 150);
+                break;
+            case "Button":
+                w = new Button("btn_" + System.currentTimeMillis(), bx, by, 100, 25, "Button");
+                break;
+            case "Label":
+                w = new Label("lbl_" + System.currentTimeMillis(), bx, by, "Label");
+                break;
+            case "Checkbox":
+                w = new Checkbox("cb_" + System.currentTimeMillis(), bx, by, "Checkbox");
+                break;
+            case "Slider":
+                w = new Slider("sld_" + System.currentTimeMillis(), bx, by, 120, 0, 100, 1, 50);
+                break;
+            case "TextField":
+                w = new TextField("tf_" + System.currentTimeMillis(), bx, by, 120, 22);
+                break;
+            case "Dropdown":
+                w = new Dropdown("dd_" + System.currentTimeMillis(), bx, by, 120, 22);
+                break;
+        }
+
+        if (w != null) {
+            root.addChild(w);
+            selectedWidget = w;
+            if (propertyPanel != null) propertyPanel.setWidget(w);
+        }
+    }
+
     public static Widget getSelectedWidget() { return selectedWidget; }
+    public static boolean isEditing() { return propertyPanel != null && propertyPanel.isEditing(); }
 }

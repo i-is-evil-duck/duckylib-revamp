@@ -129,6 +129,7 @@ public class DuckyScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (EditorOverlay.keyPressed(keyCode, scanCode, modifiers)) return true;
         if (rootWidget != null) {
             return rootWidget.keyPressed(keyCode, scanCode, modifiers);
         }
@@ -137,6 +138,7 @@ public class DuckyScreen extends Screen {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
+        if (EditorOverlay.charTyped(codePoint, modifiers)) return true;
         if (rootWidget != null) {
             return rootWidget.charTyped(codePoint, modifiers);
         }
