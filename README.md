@@ -19,15 +19,3 @@ DuckyLib.openScreen(DuckyLib.loadLayout(
     new ResourceLocation("duckylib", "guis/config.toml")
 ));
 ```
-
-## Build
-
-```sh
-./gradlew build
-```
-
-The built JAR will be in `build/libs/`.
-
-## License
-
-MIT
