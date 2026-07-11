@@ -100,6 +100,8 @@ public class PropertyPanel {
         } else if (target instanceof TextField t) {
             fields.add(new FieldDef("Value", FieldType.TEXT, t::getValue, t::setValue));
             fields.add(new FieldDef("Placeholder", FieldType.TEXT, t::getPlaceholder, t::setPlaceholder));
+            fields.add(new FieldDef("Transparent", FieldType.BOOLEAN, () -> String.valueOf(t.isBgTransparent()), v -> t.setBgTransparent(Boolean.parseBoolean(v))));
+            fields.add(new FieldDef("Border", FieldType.COLOR, () -> colorToHex(t.getBorderColor()), v -> t.setBorderColor(hexToColor(v))));
             fields.add(new FieldDef("Text Color", FieldType.COLOR, () -> colorToHex(t.getTextColor()), v -> t.setTextColor(hexToColor(v))));
             fields.add(new FieldDef("BG Color", FieldType.COLOR, () -> colorToHex(t.getBackgroundColor()), v -> t.setBackgroundColor(hexToColor(v))));
         } else if (target instanceof Dropdown d) {

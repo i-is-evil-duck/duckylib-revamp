@@ -15,7 +15,9 @@ public class TextField extends Widget {
     private int placeholderColor;
     private int backgroundColor;
     private int focusedBackgroundColor;
+    private int borderColor;
     private int borderRadius;
+    private boolean bgTransparent = false;
     private int cursorPos;
     private long focusedTime;
     private boolean editable = true;
@@ -37,11 +39,15 @@ public class TextField extends Widget {
         int absX = getAbsoluteX();
         int absY = getAbsoluteY();
 
-        int bgColor = focused ? focusedBackgroundColor : backgroundColor;
-        RenderUtil.fillRounded(graphics, absX, absY, width, height, borderRadius, bgColor);
+        if (!bgTransparent) {
+            int bgColor = focused ? focusedBackgroundColor : backgroundColor;
+            RenderUtil.fillRounded(graphics, absX, absY, width, height, borderRadius, bgColor);
+        }
 
         if (focused) {
             RenderUtil.drawRoundedBorder(graphics, absX, absY, width, height, borderRadius, 1, Theme.getCurrent().getColor("border_focused"));
+        } else if (borderColor != 0) {
+            RenderUtil.drawRoundedBorder(graphics, absX, absY, width, height, borderRadius, 1, borderColor);
         }
 
         Minecraft mc = Minecraft.getInstance();
@@ -126,4 +132,8 @@ public class TextField extends Widget {
     public int getTextColor() { return textColor; }
     public void setBackgroundColor(int color) { this.backgroundColor = color; }
     public int getBackgroundColor() { return backgroundColor; }
+    public void setBorderColor(int color) { this.borderColor = color; }
+    public int getBorderColor() { return borderColor; }
+    public void setBgTransparent(boolean bgTransparent) { this.bgTransparent = bgTransparent; }
+    public boolean isBgTransparent() { return bgTransparent; }
 }
