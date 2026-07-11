@@ -24,17 +24,20 @@ public class PropertyPanel {
     private static final int FIELD_GAP = 2;
     private static final int LABEL_W = 45;
 
-    private enum FieldType { NUMERIC, TEXT, BOOLEAN, COLOR, ACTION }
+    private enum FieldType { NUMERIC, TEXT, BOOLEAN, COLOR, CYCLE, ACTION }
 
     private static class FieldDef {
         String label;
         FieldType type;
         java.util.function.Supplier<String> getter;
         java.util.function.Consumer<String> setter;
+        String[] cycleOptions;
         Runnable onClick;
-        Runnable onRemove;
         FieldDef(String label, FieldType type, java.util.function.Supplier<String> getter, java.util.function.Consumer<String> setter) {
             this.label = label; this.type = type; this.getter = getter; this.setter = setter;
+        }
+        FieldDef(String label, FieldType type, java.util.function.Supplier<String> getter, java.util.function.Consumer<String> setter, String[] cycleOptions) {
+            this.label = label; this.type = type; this.getter = getter; this.setter = setter; this.cycleOptions = cycleOptions;
         }
         FieldDef(String label, FieldType type, Runnable onClick) {
             this.label = label; this.type = type; this.onClick = onClick;
@@ -86,6 +89,7 @@ public class PropertyPanel {
         } else if (target instanceof Checkbox c) {
             fields.add(new FieldDef("Label", FieldType.TEXT, c::getLabel, c::setLabel));
             fields.add(new FieldDef("Checked", FieldType.BOOLEAN, () -> String.valueOf(c.isChecked()), v -> c.setChecked(Boolean.parseBoolean(v))));
+            fields.add(new FieldDef("Style", FieldType.CYCLE, () -> c.getCheckStyle().name(), v -> c.setCheckStyle(Checkbox.CheckStyle.valueOf(v)), new String[]{"FILLED", "CHECK", "CROSS"}));
             fields.add(new FieldDef("Check Color", FieldType.COLOR, () -> colorToHex(c.getCheckColor()), v -> c.setCheckColor(hexToColor(v))));
             fields.add(new FieldDef("Text Color", FieldType.COLOR, () -> colorToHex(c.getLabelColor()), v -> c.setLabelColor(hexToColor(v))));
         } else if (target instanceof Slider s) {
@@ -188,6 +192,7 @@ public class PropertyPanel {
             boolean isAction = f.type == FieldType.ACTION;
             boolean isBoolean = f.type == FieldType.BOOLEAN;
             boolean isColor = f.type == FieldType.COLOR;
+            boolean isCycle = f.type == FieldType.CYCLE;
             boolean hovered = mouseX >= x + 4 && mouseX < x + width - 4 && mouseY >= fieldY && mouseY < fieldY + FIELD_H;
 
             if (isAction) {
@@ -219,6 +224,25 @@ public class PropertyPanel {
                 if (isEditing && (System.currentTimeMillis() / 500) % 2 == 0) {
                     int cx = textX + 2 + mc.font.width(editBuffer);
                     graphics.fill(cx, fieldY + 1, cx + 1, fieldY + FIELD_H - 1, 0xFFFFFFFF);
+                }
+            } else if (isCycle) {
+                RenderUtil.fill(graphics, x + 4, fieldY, x + width - 4, fieldY + FIELD_H, 0x00000000);
+                graphics.drawString(mc.font, Component.literal(f.label + ":"), x + 8, fieldY + 2, textCol, false);
+                String curVal = f.getter.get();
+                int pillX = x + 8 + LABEL_W;
+                int pillY = fieldY + 1;
+                int pillH = FIELD_H - 2;
+                for (String opt : f.cycleOptions) {
+                    int pw = mc.font.width(opt) + 8;
+                    boolean active = opt.equals(curVal);
+                    boolean pillHovered = mouseX >= pillX && mouseX < pillX + pw && mouseY >= pillY && mouseY < pillY + pillH;
+                    int pillBg = active ? 0xFF5865F2 : (pillHovered ? 0x60333333 : 0x302f3136);
+                    RenderUtil.fill(graphics, pillX, pillY, pillX + pw, pillY + pillH, pillBg);
+                    if (active || pillHovered) {
+                        RenderUtil.drawBorder(graphics, pillX, pillY, pw, pillH, 1, active ? 0xFF7777FF : 0xFF444444);
+                    }
+                    graphics.drawString(mc.font, Component.literal(opt), pillX + 4, pillY + 1, active ? 0xFFFFFFFF : secCol, false);
+                    pillX += pw + 2;
                 }
             } else {
                 int editX = x + 8 + LABEL_W;
@@ -252,6 +276,22 @@ public class PropertyPanel {
             if (f.type == FieldType.BOOLEAN) {
                 boolean cur = Boolean.parseBoolean(f.getter.get());
                 f.setter.accept(String.valueOf(!cur));
+                return true;
+            }
+            if (f.type == FieldType.CYCLE) {
+                int pillX = (int)mouseX;
+                int pillStartX = x + 8 + LABEL_W;
+                int curPillX = pillStartX;
+                for (String opt : f.cycleOptions) {
+                    int pw = Minecraft.getInstance().font.width(opt) + 8;
+                    if (pillX >= curPillX && pillX < curPillX + pw) {
+                        if (!opt.equals(f.getter.get())) {
+                            f.setter.accept(opt);
+                        }
+                        return true;
+                    }
+                    curPillX += pw + 2;
+                }
                 return true;
             }
             editingField = i;

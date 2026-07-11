@@ -7,8 +7,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public class Checkbox extends Widget {
+    public enum CheckStyle { FILLED, CHECK, CROSS }
+
     private String label;
     private boolean checked;
+    private CheckStyle checkStyle = CheckStyle.FILLED;
     private int boxSize;
     private int checkColor;
     private int boxColor;
@@ -47,10 +50,18 @@ public class Checkbox extends Widget {
         RenderUtil.drawRoundedBorder(graphics, absX, absY + (height - boxSize) / 2, boxSize, boxSize, 2, 1, boxBorderColor);
 
         if (checked) {
-            int checkX = absX + 3;
-            int checkY = absY + (height - boxSize) / 2 + 3;
-            int checkSize = boxSize - 6;
-            RenderUtil.fill(graphics, checkX, checkY, checkX + checkSize, checkY + checkSize, checkColor);
+            int boxX = absX;
+            int boxY = absY + (height - boxSize) / 2;
+            if (checkStyle == CheckStyle.FILLED) {
+                int checkX = boxX + 3;
+                int checkY = boxY + 3;
+                int checkSize = boxSize - 6;
+                RenderUtil.fill(graphics, checkX, checkY, checkX + checkSize, checkY + checkSize, checkColor);
+            } else if (checkStyle == CheckStyle.CHECK) {
+                graphics.drawString(Minecraft.getInstance().font, Component.literal("✓"), boxX + 1, boxY, checkColor, false);
+            } else if (checkStyle == CheckStyle.CROSS) {
+                graphics.drawString(Minecraft.getInstance().font, Component.literal("✗"), boxX + 1, boxY, checkColor, false);
+            }
         }
 
         Minecraft mc = Minecraft.getInstance();
@@ -87,4 +98,6 @@ public class Checkbox extends Widget {
     public int getCheckColor() { return checkColor; }
     public void setLabelColor(int color) { this.labelColor = color; }
     public int getLabelColor() { return labelColor; }
+    public void setCheckStyle(CheckStyle style) { this.checkStyle = style; }
+    public CheckStyle getCheckStyle() { return checkStyle; }
 }
