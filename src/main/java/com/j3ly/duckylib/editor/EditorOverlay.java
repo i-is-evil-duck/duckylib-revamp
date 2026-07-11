@@ -21,7 +21,7 @@ public class EditorOverlay {
     private static final int HANDLE_SIZE = 6;
 
     private static final String[] TOOLBAR_BUTTONS = {"Panel", "Button", "Label", "Checkbox", "Slider", "TextField", "Dropdown"};
-    private static final int TOOLBAR_Y = 20;
+    private static final int TOOLBAR_Y = 5;
     private static final int TOOLBAR_BTN_H = 16;
 
     public static void toggle() {
@@ -55,7 +55,6 @@ public class EditorOverlay {
         }
 
         Minecraft mc = Minecraft.getInstance();
-        graphics.drawString(mc.font, "§b[DuckyLib Editor]  §f/duckyeditor to close", 5, 5, 0xFFFFFF, true);
 
         int sw = mc.getWindow().getGuiScaledWidth();
         int btnX = 5;
@@ -63,7 +62,7 @@ public class EditorOverlay {
 
         for (int i = 0; i < TOOLBAR_BUTTONS.length; i++) {
             String label = TOOLBAR_BUTTONS[i];
-            int btnW = mc.font.width(label) + 12;
+            int btnW = mc.font.width("+" + label) + 12;
             boolean hover = mouseX >= btnX && mouseX < btnX + btnW && mouseY >= TOOLBAR_Y && mouseY < TOOLBAR_Y + TOOLBAR_BTN_H;
             int col = hover ? 0xFF5865F2 : 0xFF2f3136;
             RenderUtil.fill(graphics, btnX, TOOLBAR_Y, btnX + btnW, TOOLBAR_Y + TOOLBAR_BTN_H, col);

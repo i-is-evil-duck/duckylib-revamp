@@ -31,12 +31,12 @@ public class PropertyPanel {
         FieldType type;
         java.util.function.Supplier<String> getter;
         java.util.function.Consumer<String> setter;
-        String[] cycleOptions;
+        java.util.function.Supplier<String[]> cycleOptions;
         Runnable onClick;
         FieldDef(String label, FieldType type, java.util.function.Supplier<String> getter, java.util.function.Consumer<String> setter) {
             this.label = label; this.type = type; this.getter = getter; this.setter = setter;
         }
-        FieldDef(String label, FieldType type, java.util.function.Supplier<String> getter, java.util.function.Consumer<String> setter, String[] cycleOptions) {
+        FieldDef(String label, FieldType type, java.util.function.Supplier<String> getter, java.util.function.Consumer<String> setter, java.util.function.Supplier<String[]> cycleOptions) {
             this.label = label; this.type = type; this.getter = getter; this.setter = setter; this.cycleOptions = cycleOptions;
         }
         FieldDef(String label, FieldType type, Runnable onClick) {
@@ -89,7 +89,7 @@ public class PropertyPanel {
         } else if (target instanceof Checkbox c) {
             fields.add(new FieldDef("Label", FieldType.TEXT, c::getLabel, c::setLabel));
             fields.add(new FieldDef("Checked", FieldType.BOOLEAN, () -> String.valueOf(c.isChecked()), v -> c.setChecked(Boolean.parseBoolean(v))));
-            fields.add(new FieldDef("Style", FieldType.CYCLE, () -> c.getCheckStyle().name(), v -> c.setCheckStyle(Checkbox.CheckStyle.valueOf(v)), new String[]{"FILLED", "CHECK", "CROSS"}));
+            fields.add(new FieldDef("Style", FieldType.CYCLE, () -> c.getCheckStyle().name(), v -> c.setCheckStyle(Checkbox.CheckStyle.valueOf(v)), () -> new String[]{"FILLED", "CHECK", "CROSS"}));
             fields.add(new FieldDef("Check Color", FieldType.COLOR, () -> colorToHex(c.getCheckColor()), v -> c.setCheckColor(hexToColor(v))));
             fields.add(new FieldDef("Text Color", FieldType.COLOR, () -> colorToHex(c.getLabelColor()), v -> c.setLabelColor(hexToColor(v))));
         } else if (target instanceof Slider s) {
@@ -111,10 +111,10 @@ public class PropertyPanel {
         } else if (target instanceof Dropdown d) {
             fields.add(new FieldDef("BG Color", FieldType.COLOR, () -> colorToHex(d.getBackgroundColor()), v -> d.setBackgroundColor(hexToColor(v))));
             fields.add(new FieldDef("Text Color", FieldType.COLOR, () -> colorToHex(d.getTextColor()), v -> d.setTextColor(hexToColor(v))));
-            fields.add(new FieldDef("Selected", FieldType.TEXT, d::getSelected, v -> {
+            fields.add(new FieldDef("Selected", FieldType.CYCLE, d::getSelected, v -> {
                 int idx = d.getOptions().indexOf(v);
                 if (idx >= 0) d.setSelectedIndex(idx);
-            }));
+            }, () -> d.getOptions().toArray(new String[0])));
             for (int i = 0; i < d.getOptions().size(); i++) {
                 int ii = i;
                 String optLabel = "Opt " + (i + 1);
@@ -232,7 +232,8 @@ public class PropertyPanel {
                 int pillX = x + 8 + LABEL_W;
                 int pillY = fieldY + 1;
                 int pillH = FIELD_H - 2;
-                for (String opt : f.cycleOptions) {
+                String[] opts = f.cycleOptions.get();
+                for (String opt : opts) {
                     int pw = mc.font.width(opt) + 8;
                     boolean active = opt.equals(curVal);
                     boolean pillHovered = mouseX >= pillX && mouseX < pillX + pw && mouseY >= pillY && mouseY < pillY + pillH;
@@ -282,7 +283,8 @@ public class PropertyPanel {
                 int pillX = (int)mouseX;
                 int pillStartX = x + 8 + LABEL_W;
                 int curPillX = pillStartX;
-                for (String opt : f.cycleOptions) {
+                String[] opts = f.cycleOptions.get();
+                for (String opt : opts) {
                     int pw = Minecraft.getInstance().font.width(opt) + 8;
                     if (pillX >= curPillX && pillX < curPillX + pw) {
                         if (!opt.equals(f.getter.get())) {

@@ -58,9 +58,11 @@ public class Checkbox extends Widget {
                 int checkSize = boxSize - 6;
                 RenderUtil.fill(graphics, checkX, checkY, checkX + checkSize, checkY + checkSize, checkColor);
             } else if (checkStyle == CheckStyle.CHECK) {
-                graphics.drawString(Minecraft.getInstance().font, Component.literal("✓"), boxX + 1, boxY, checkColor, false);
+                int cw = Minecraft.getInstance().font.width("✓");
+                graphics.drawString(Minecraft.getInstance().font, Component.literal("✓"), boxX + (boxSize - cw) / 2, boxY + 1, checkColor, false);
             } else if (checkStyle == CheckStyle.CROSS) {
-                graphics.drawString(Minecraft.getInstance().font, Component.literal("✗"), boxX + 1, boxY, checkColor, false);
+                int cw = Minecraft.getInstance().font.width("✗");
+                graphics.drawString(Minecraft.getInstance().font, Component.literal("✗"), boxX + (boxSize - cw) / 2, boxY + 1, checkColor, false);
             }
         }
 
