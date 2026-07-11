@@ -71,4 +71,8 @@ public class Button extends Widget {
 
     public void setLabel(String label) { this.label = label; }
     public String getLabel() { return label; }
+    public void setBackgroundColor(int color) { this.backgroundColor = color; }
+    public int getBackgroundColor() { return backgroundColor; }
+    public void setLabelColor(int color) { this.labelColor = color; }
+    public int getLabelColor() { return labelColor; }
 }

@@ -105,6 +105,7 @@ public class Panel extends Widget {
     public void setBackgroundColor(int color) { this.backgroundColor = color; }
     public int getBackgroundColor() { return backgroundColor; }
     public void setBorderColor(int color) { this.borderColor = color; }
+    public int getBorderColor() { return borderColor; }
     public void setBorderWidth(int width) { this.borderWidth = width; }
     public void setClipChildren(boolean clip) { this.clipChildren = clip; }
 }

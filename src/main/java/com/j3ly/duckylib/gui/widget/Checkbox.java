@@ -83,4 +83,8 @@ public class Checkbox extends Widget {
     public void setChecked(boolean checked) { this.checked = checked; }
     public String getLabel() { return label; }
     public void setLabel(String label) { this.label = label; updateSize(); }
+    public void setCheckColor(int color) { this.checkColor = color; }
+    public int getCheckColor() { return checkColor; }
+    public void setLabelColor(int color) { this.labelColor = color; }
+    public int getLabelColor() { return labelColor; }
 }

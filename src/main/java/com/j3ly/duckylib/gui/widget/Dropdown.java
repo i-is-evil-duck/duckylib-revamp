@@ -119,4 +119,8 @@ public class Dropdown extends Widget {
     public String getSelected() { return options.isEmpty() ? "" : options.get(selectedIndex); }
     public int getSelectedIndex() { return selectedIndex; }
     public void setSelectedIndex(int index) { this.selectedIndex = Math.max(0, Math.min(index, options.size() - 1)); }
+    public void setBackgroundColor(int color) { this.backgroundColor = color; }
+    public int getBackgroundColor() { return backgroundColor; }
+    public void setTextColor(int color) { this.textColor = color; }
+    public int getTextColor() { return textColor; }
 }

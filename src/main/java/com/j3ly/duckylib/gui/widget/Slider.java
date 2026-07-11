@@ -103,6 +103,15 @@ public class Slider extends Widget {
     public void setLabel(String label) { this.label = label; }
     public String getLabel() { return label; }
     public float getMin() { return min; }
+    public void setMin(float min) { this.min = min; this.value = Math.max(min, Math.min(max, value)); }
     public float getMax() { return max; }
+    public void setMax(float max) { this.max = max; this.value = Math.max(min, Math.min(max, value)); }
     public float getStep() { return step; }
+    public void setStep(float step) { this.step = Math.max(0.01f, step); }
+    public void setTrackColor(int color) { this.trackColor = color; }
+    public int getTrackColor() { return trackColor; }
+    public void setFillColor(int color) { this.fillColor = color; }
+    public int getFillColor() { return fillColor; }
+    public void setThumbColor(int color) { this.thumbColor = color; }
+    public int getThumbColor() { return thumbColor; }
 }

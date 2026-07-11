@@ -70,6 +70,7 @@ public class Label extends Widget {
     }
     public String getText() { return text; }
     public void setColor(int color) { this.color = color; }
+    public int getColor() { return color; }
     public void setScale(float scale) { this.scale = scale; updateSize(); }
     public void setCentered(boolean centered) { this.centered = centered; }
 }

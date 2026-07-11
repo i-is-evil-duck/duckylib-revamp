@@ -122,4 +122,8 @@ public class TextField extends Widget {
     public void setPlaceholder(String placeholder) { this.placeholder = placeholder; }
     public String getPlaceholder() { return placeholder; }
     public void setMaxLength(int maxLength) { this.maxLength = maxLength; }
+    public void setTextColor(int color) { this.textColor = color; }
+    public int getTextColor() { return textColor; }
+    public void setBackgroundColor(int color) { this.backgroundColor = color; }
+    public int getBackgroundColor() { return backgroundColor; }
 }
