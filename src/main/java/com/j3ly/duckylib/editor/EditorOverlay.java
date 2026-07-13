@@ -71,9 +71,19 @@ public class EditorOverlay {
             toolbarBtnBounds[i] = new int[]{btnX, btnX + btnW};
             btnX += btnW + 4;
         }
+
+        String closeLabel = "✕";
+        int closeW = mc.font.width(closeLabel) + 12;
+        int closeX = sw - closeW - 5;
+        boolean closeHover = mouseX >= closeX && mouseX < closeX + closeW && mouseY >= TOOLBAR_Y && mouseY < TOOLBAR_Y + TOOLBAR_BTN_H;
+        RenderUtil.fill(graphics, closeX, TOOLBAR_Y, closeX + closeW, TOOLBAR_Y + TOOLBAR_BTN_H, closeHover ? 0xFFED4245 : 0xFF2f3136);
+        RenderUtil.drawBorder(graphics, closeX, TOOLBAR_Y, closeW, TOOLBAR_BTN_H, 1, 0xFF1e1e1e);
+        graphics.drawString(mc.font, closeLabel, closeX + 6, TOOLBAR_Y + 4, closeHover ? 0xFFFFFFFF : 0xFFdcddde, false);
+        closeBtnBounds = new int[]{closeX, closeX + closeW};
     }
 
     private static int[][] toolbarBtnBounds = new int[TOOLBAR_BUTTONS.length][2];
+    private static int[] closeBtnBounds = new int[2];
 
     private static void drawHandle(GuiGraphics graphics, int x, int y) {
         RenderUtil.fill(graphics, x, y, x + HANDLE_SIZE, y + HANDLE_SIZE, 0xFFFFFFFF);
@@ -96,6 +106,12 @@ public class EditorOverlay {
                     addWidget(TOOLBAR_BUTTONS[i]);
                     return true;
                 }
+            }
+            if (mouseX >= closeBtnBounds[0] && mouseX < closeBtnBounds[1]) {
+                active = false;
+                propertyPanel = null;
+                selectedWidget = null;
+                return true;
             }
         }
 
