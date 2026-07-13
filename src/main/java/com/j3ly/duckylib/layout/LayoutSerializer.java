@@ -8,60 +8,78 @@ public class LayoutSerializer {
     public static String serialize(Widget widget) {
         StringBuilder sb = new StringBuilder();
         sb.append("# DuckyLib UI Layout - Exported\n\n");
-        serializeWidget(sb, widget, 0);
+        serializeWidget(sb, widget, 0, "widget");
         return sb.toString();
     }
 
-    private static void serializeWidget(StringBuilder sb, Widget widget, int indent) {
+    private static void serializeWidget(StringBuilder sb, Widget widget, int indent, String arrayKey) {
         String ind = "  ".repeat(indent);
 
-        sb.append(ind).append("[[widget]]\n");
-        sb.append(ind).append("type = \"").append(getTypeName(widget)).append("\"\n");
-        sb.append(ind).append("id = \"").append(escape(widget.getId())).append("\"\n");
-        sb.append(ind).append("x = ").append(widget.getX()).append("\n");
-        sb.append(ind).append("y = ").append(widget.getY()).append("\n");
-        sb.append(ind).append("width = ").append(widget.getWidth()).append("\n");
-        sb.append(ind).append("height = ").append(widget.getHeight()).append("\n");
+        sb.append(ind).append("[[").append(arrayKey).append("]]\n");
+        writeProp(sb, ind, "type", getTypeName(widget));
+        writeProp(sb, ind, "id", widget.getId());
+        writeProp(sb, ind, "x", widget.getX());
+        writeProp(sb, ind, "y", widget.getY());
+        writeProp(sb, ind, "width", widget.getWidth());
+        writeProp(sb, ind, "height", widget.getHeight());
+        if (!widget.isVisible()) writeProp(sb, ind, "visible", false);
+        if (!widget.isEnabled()) writeProp(sb, ind, "enabled", false);
 
-        if (widget instanceof Panel) {
-            Panel p = (Panel) widget;
-            sb.append(ind).append("background = \"").append(colorToHex(p.getBackgroundColor())).append("\"\n");
-        } else if (widget instanceof Button) {
-            Button b = (Button) widget;
-            sb.append(ind).append("label = \"").append(escape(b.getLabel())).append("\"\n");
-        } else if (widget instanceof Label) {
-            Label l = (Label) widget;
-            sb.append(ind).append("text = \"").append(escape(l.getText())).append("\"\n");
-        } else if (widget instanceof TextField) {
-            TextField tf = (TextField) widget;
-            sb.append(ind).append("placeholder = \"").append(escape(tf.getPlaceholder())).append("\"\n");
-        } else if (widget instanceof Checkbox) {
-            Checkbox cb = (Checkbox) widget;
-            sb.append(ind).append("label = \"").append(escape(cb.getLabel())).append("\"\n");
-            sb.append(ind).append("default = ").append(cb.isChecked()).append("\n");
-        } else if (widget instanceof Slider) {
-            Slider s = (Slider) widget;
-            sb.append(ind).append("label = \"").append(escape(s.getLabel())).append("\"\n");
-            sb.append(ind).append("min = ").append(s.getMin()).append("\n");
-            sb.append(ind).append("max = ").append(s.getMax()).append("\n");
-            sb.append(ind).append("step = ").append(s.getStep()).append("\n");
-            sb.append(ind).append("default = ").append(s.getValue()).append("\n");
-        } else if (widget instanceof Dropdown) {
-            Dropdown d = (Dropdown) widget;
+        if (widget instanceof Panel p) {
+            writeProp(sb, ind, "background", colorToHex(p.getBackgroundColor()));
+            writeProp(sb, ind, "border", colorToHex(p.getBorderColor()));
+        } else if (widget instanceof Button b) {
+            writeProp(sb, ind, "label", escape(b.getLabel()));
+            writeProp(sb, ind, "background", colorToHex(b.getBackgroundColor()));
+            writeProp(sb, ind, "label_color", colorToHex(b.getLabelColor()));
+        } else if (widget instanceof Label l) {
+            writeProp(sb, ind, "text", escape(l.getText()));
+            writeProp(sb, ind, "color", colorToHex(l.getColor()));
+        } else if (widget instanceof TextField tf) {
+            writeProp(sb, ind, "placeholder", escape(tf.getPlaceholder()));
+            writeProp(sb, ind, "default", escape(tf.getValue()));
+        } else if (widget instanceof Checkbox cb) {
+            writeProp(sb, ind, "label", escape(cb.getLabel()));
+            writeProp(sb, ind, "default", cb.isChecked());
+            writeProp(sb, ind, "check_style", cb.getCheckStyle().name());
+        } else if (widget instanceof Slider s) {
+            writeProp(sb, ind, "label", escape(s.getLabel()));
+            writeProp(sb, ind, "min", s.getMin());
+            writeProp(sb, ind, "max", s.getMax());
+            writeProp(sb, ind, "step", s.getStep());
+            writeProp(sb, ind, "default", s.getValue());
+        } else if (widget instanceof Dropdown d) {
             sb.append(ind).append("options = [");
             for (int i = 0; i < d.getOptions().size(); i++) {
                 if (i > 0) sb.append(", ");
                 sb.append("\"").append(escape(d.getOptions().get(i))).append("\"");
             }
             sb.append("]\n");
-            sb.append(ind).append("default_index = ").append(d.getSelectedIndex()).append("\n");
+            writeProp(sb, ind, "default_index", d.getSelectedIndex());
         }
 
         sb.append("\n");
 
+        String childKey = arrayKey + ".children";
         for (Widget child : widget.getChildren()) {
-            serializeWidget(sb, child, indent + 1);
+            serializeWidget(sb, child, indent + 1, childKey);
         }
+    }
+
+    private static void writeProp(StringBuilder sb, String ind, String key, String val) {
+        sb.append(ind).append(key).append(" = \"").append(val).append("\"\n");
+    }
+
+    private static void writeProp(StringBuilder sb, String ind, String key, int val) {
+        sb.append(ind).append(key).append(" = ").append(val).append("\n");
+    }
+
+    private static void writeProp(StringBuilder sb, String ind, String key, float val) {
+        sb.append(ind).append(key).append(" = ").append(val).append("\n");
+    }
+
+    private static void writeProp(StringBuilder sb, String ind, String key, boolean val) {
+        sb.append(ind).append(key).append(" = ").append(val).append("\n");
     }
 
     private static String getTypeName(Widget widget) {

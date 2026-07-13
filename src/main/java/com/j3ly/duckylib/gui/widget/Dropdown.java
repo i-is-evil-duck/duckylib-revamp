@@ -114,7 +114,12 @@ public class Dropdown extends Widget {
     public boolean charTyped(char codePoint, int modifiers) { return false; }
 
     public void addOption(String option) { options.add(option); }
-    public void setOptions(List<String> options) { this.options = new ArrayList<>(options); }
+    public void setOptions(List<String> options) {
+        this.options = new ArrayList<>(options);
+        if (selectedIndex >= this.options.size()) {
+            selectedIndex = Math.max(0, this.options.size() - 1);
+        }
+    }
     public List<String> getOptions() { return new ArrayList<>(options); }
     public String getSelected() { return options.isEmpty() ? "" : options.get(selectedIndex); }
     public int getSelectedIndex() { return selectedIndex; }

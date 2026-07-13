@@ -42,11 +42,13 @@ public class DuckyScreen extends Screen {
 
     @SuppressWarnings("unchecked")
     public <T extends Widget> T getWidget(String id, Class<T> type) {
+        if (rootWidget == null) return null;
         return findWidget(rootWidget, id, type);
     }
 
     @SuppressWarnings("unchecked")
     private <T extends Widget> T findWidget(Widget parent, String id, Class<T> type) {
+        if (parent == null) return null;
         if (parent.getId().equals(id) && type.isInstance(parent)) {
             return (T) parent;
         }

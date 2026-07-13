@@ -18,6 +18,10 @@ public class LayoutLoader {
             InputStream stream = net.minecraft.client.Minecraft.getInstance().getResourceManager()
                 .open(location);
             Toml toml = new Toml().read(new InputStreamReader(stream));
+            List<Toml> widgets = toml.getTables("widget");
+            if (widgets != null && !widgets.isEmpty()) {
+                return parseWidget(widgets.get(0));
+            }
             return parseWidget(toml);
         } catch (Exception e) {
             DuckyLib.LOGGER.error("Failed to load layout: " + location, e);
@@ -62,6 +66,8 @@ public class LayoutLoader {
             case "button":
                 String label = toml.getString("label", "Button");
                 Button button = new Button(id, x, y, width, height, label);
+                if (toml.contains("background")) button.setBackgroundColor(Theme.parseColor(toml.getString("background")));
+                if (toml.contains("label_color")) button.setLabelColor(Theme.parseColor(toml.getString("label_color")));
                 return button;
 
             case "label":
@@ -77,12 +83,15 @@ public class LayoutLoader {
                 if (toml.contains("placeholder")) tf.setPlaceholder(toml.getString("placeholder"));
                 if (toml.contains("max_length")) tf.setMaxLength(toml.getLong("max_length").intValue());
                 if (toml.contains("default")) tf.setValue(toml.getString("default"));
+                if (toml.contains("text_color")) tf.setTextColor(Theme.parseColor(toml.getString("text_color")));
+                if (toml.contains("background")) tf.setBackgroundColor(Theme.parseColor(toml.getString("background")));
                 return tf;
 
             case "checkbox":
                 String cbLabel = toml.getString("label", "");
                 Checkbox cb = new Checkbox(id, x, y, cbLabel);
                 if (toml.contains("default")) cb.setChecked(toml.getBoolean("default"));
+                if (toml.contains("check_style")) cb.setCheckStyle(Checkbox.CheckStyle.valueOf(toml.getString("check_style")));
                 return cb;
 
             case "slider":

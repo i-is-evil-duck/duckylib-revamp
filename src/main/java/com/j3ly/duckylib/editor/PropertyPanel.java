@@ -158,6 +158,9 @@ public class PropertyPanel {
         if (!visible) return;
         updatePosition();
 
+        int maxScroll = Math.max(0, fields.size() * (FIELD_H + FIELD_GAP) - (height - 60));
+        fieldScroll = Math.max(0, Math.min(fieldScroll, maxScroll));
+
         int bg = Theme.getCurrent().getColor("panel_bg");
         RenderUtil.fillRounded(graphics, x, y, width, height, 6, bg);
         int border = Theme.getCurrent().getColor("border");

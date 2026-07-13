@@ -227,8 +227,13 @@ public class EditorOverlay {
     }
 
     private static Widget findWidgetAt(Widget root, double mouseX, double mouseY) {
+        double childMouseY = mouseY;
+        if (root instanceof ScrollPanel sp) {
+            childMouseY = mouseY + sp.getScrollOffset();
+        }
+
         for (int i = root.getChildren().size() - 1; i >= 0; i--) {
-            Widget found = findWidgetAt(root.getChildren().get(i), mouseX, mouseY);
+            Widget found = findWidgetAt(root.getChildren().get(i), mouseX, childMouseY);
             if (found != null) return found;
         }
 

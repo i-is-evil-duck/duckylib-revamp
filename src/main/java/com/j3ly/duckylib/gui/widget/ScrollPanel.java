@@ -96,7 +96,6 @@ public class ScrollPanel extends Panel {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (scrolling && scrollbarVisible) {
-            int absY = getAbsoluteY();
             int trackHeight = height - 4;
             float scrollRatio = (float)dragY / trackHeight;
             scrollOffset += scrollRatio * (contentHeight - height);
