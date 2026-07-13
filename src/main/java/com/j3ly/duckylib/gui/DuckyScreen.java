@@ -38,6 +38,7 @@ public class DuckyScreen extends Screen {
     }
 
     public Widget getRootWidget() { return rootWidget; }
+    public void setRootWidget(Widget root) { this.rootWidget = root; }
 
     @SuppressWarnings("unchecked")
     public <T extends Widget> T getWidget(String id, Class<T> type) {

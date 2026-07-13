@@ -69,7 +69,9 @@ public abstract class Widget {
     public Widget getParent() { return parent; }
 
     public boolean contains(double mouseX, double mouseY) {
-        return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
+        int absX = getAbsoluteX();
+        int absY = getAbsoluteY();
+        return mouseX >= absX && mouseX < absX + width && mouseY >= absY && mouseY < absY + height;
     }
 
     public int getAbsoluteX() {
