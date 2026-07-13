@@ -111,6 +111,7 @@ public class EditorOverlay {
                 active = false;
                 propertyPanel = null;
                 selectedWidget = null;
+                Minecraft.getInstance().setScreen(null);
                 return true;
             }
         }

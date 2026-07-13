@@ -71,10 +71,11 @@ public class PropertyPanel {
         fields.clear();
         if (target == null) return;
 
-        fields.add(new FieldDef("X", FieldType.NUMERIC, () -> String.valueOf(target.getX()), v -> target.setX(parseInt(v, target.getX()))));
-        fields.add(new FieldDef("Y", FieldType.NUMERIC, () -> String.valueOf(target.getY()), v -> target.setY(parseInt(v, target.getY()))));
-        fields.add(new FieldDef("W", FieldType.NUMERIC, () -> String.valueOf(target.getWidth()), v -> target.setWidth(Math.max(10, parseInt(v, target.getWidth())))));
-        fields.add(new FieldDef("H", FieldType.NUMERIC, () -> String.valueOf(target.getHeight()), v -> target.setHeight(Math.max(10, parseInt(v, target.getHeight())))));
+        boolean isRoot = target.getParent() == null;
+        fields.add(new FieldDef("X", FieldType.NUMERIC, () -> String.valueOf(target.getX()), isRoot ? v -> {} : v -> target.setX(parseInt(v, target.getX()))));
+        fields.add(new FieldDef("Y", FieldType.NUMERIC, () -> String.valueOf(target.getY()), isRoot ? v -> {} : v -> target.setY(parseInt(v, target.getY()))));
+        fields.add(new FieldDef("W", FieldType.NUMERIC, () -> String.valueOf(target.getWidth()), isRoot ? v -> {} : v -> target.setWidth(Math.max(10, parseInt(v, target.getWidth())))));
+        fields.add(new FieldDef("H", FieldType.NUMERIC, () -> String.valueOf(target.getHeight()), isRoot ? v -> {} : v -> target.setHeight(Math.max(10, parseInt(v, target.getHeight())))));
 
         if (target instanceof Panel p) {
             fields.add(new FieldDef("BG Color", FieldType.COLOR, () -> colorToHex(p.getBackgroundColor()), v -> p.setBackgroundColor(hexToColor(v))));
@@ -249,9 +250,12 @@ public class PropertyPanel {
                 int editX = x + 8 + LABEL_W;
                 int editW = width - 16 - LABEL_W;
                 graphics.drawString(mc.font, Component.literal(f.label + ":"), x + 8, fieldY + 2, textCol, false);
+                boolean isRootDim = target.getParent() == null && (f.label.equals("X") || f.label.equals("Y") || f.label.equals("W") || f.label.equals("H"));
                 String displayVal = isEditing ? editBuffer : f.getter.get();
-                int valCol = isEditing ? 0xFFFFFF00 : (hovered ? 0xFFA0A0FF : secCol);
-                RenderUtil.fill(graphics, editX, fieldY, editX + editW, fieldY + FIELD_H, isEditing ? 0x40404040 : (hovered ? 0x20333333 : 0x00000000));
+                int valCol = isEditing ? 0xFFFFFF00 : (isRootDim ? 0xFF888888 : (hovered ? 0xFFA0A0FF : secCol));
+                if (!isRootDim) {
+                    RenderUtil.fill(graphics, editX, fieldY, editX + editW, fieldY + FIELD_H, isEditing ? 0x40404040 : (hovered ? 0x20333333 : 0x00000000));
+                }
                 graphics.drawString(mc.font, Component.literal(displayVal), editX + 2, fieldY + 2, valCol, false);
                 if (isEditing && (System.currentTimeMillis() / 500) % 2 == 0) {
                     int cx = editX + 2 + mc.font.width(editBuffer);
@@ -294,6 +298,9 @@ public class PropertyPanel {
                     }
                     curPillX += pw + 2;
                 }
+                return true;
+            }
+            if (target.getParent() == null && (f.label.equals("X") || f.label.equals("Y") || f.label.equals("W") || f.label.equals("H"))) {
                 return true;
             }
             editingField = i;
