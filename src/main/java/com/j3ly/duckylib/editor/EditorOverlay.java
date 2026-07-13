@@ -2,10 +2,14 @@ package com.j3ly.duckylib.editor;
 
 import com.j3ly.duckylib.gui.DuckyScreen;
 import com.j3ly.duckylib.gui.widget.*;
+import com.j3ly.duckylib.layout.LayoutLoader;
+import com.j3ly.duckylib.layout.LayoutSerializer;
 import com.j3ly.duckylib.util.RenderUtil;
+import com.moandjiezana.toml.Toml;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
+import java.util.List;
 import java.util.Random;
 
 public class EditorOverlay {
@@ -72,18 +76,26 @@ public class EditorOverlay {
             btnX += btnW + 4;
         }
 
-        String closeLabel = "✕";
-        int closeW = mc.font.width(closeLabel) + 12;
-        int closeX = sw - closeW - 5;
-        boolean closeHover = mouseX >= closeX && mouseX < closeX + closeW && mouseY >= TOOLBAR_Y && mouseY < TOOLBAR_Y + TOOLBAR_BTN_H;
-        RenderUtil.fill(graphics, closeX, TOOLBAR_Y, closeX + closeW, TOOLBAR_Y + TOOLBAR_BTN_H, closeHover ? 0xFFED4245 : 0xFF2f3136);
-        RenderUtil.drawBorder(graphics, closeX, TOOLBAR_Y, closeW, TOOLBAR_BTN_H, 1, 0xFF1e1e1e);
-        graphics.drawString(mc.font, closeLabel, closeX + 6, TOOLBAR_Y + 4, closeHover ? 0xFFFFFFFF : 0xFFdcddde, false);
-        closeBtnBounds = new int[]{closeX, closeX + closeW};
+        String[] actionLabels = {"Export", "Import", "✕"};
+        int[] actionBounds = new int[3];
+        int actionX = sw - 5;
+        for (int i = actionLabels.length - 1; i >= 0; i--) {
+            String al = actionLabels[i];
+            int aw = mc.font.width(al) + 12;
+            actionX -= aw;
+            boolean ah = mouseX >= actionX && mouseX < actionX + aw && mouseY >= TOOLBAR_Y && mouseY < TOOLBAR_Y + TOOLBAR_BTN_H;
+            int ac = i == 2 ? (ah ? 0xFFED4245 : 0xFF2f3136) : (ah ? 0xFF43B581 : 0xFF2f3136);
+            RenderUtil.fill(graphics, actionX, TOOLBAR_Y, actionX + aw, TOOLBAR_Y + TOOLBAR_BTN_H, ac);
+            RenderUtil.drawBorder(graphics, actionX, TOOLBAR_Y, aw, TOOLBAR_BTN_H, 1, 0xFF1e1e1e);
+            graphics.drawString(mc.font, al, actionX + 6, TOOLBAR_Y + 4, ah ? 0xFFFFFFFF : 0xFFdcddde, false);
+            actionBounds[i] = actionX;
+            actionX -= 4;
+        }
+        actionBtnBounds = actionBounds;
     }
 
     private static int[][] toolbarBtnBounds = new int[TOOLBAR_BUTTONS.length][2];
-    private static int[] closeBtnBounds = new int[2];
+    private static int[] actionBtnBounds = new int[3];
 
     private static void drawHandle(GuiGraphics graphics, int x, int y) {
         RenderUtil.fill(graphics, x, y, x + HANDLE_SIZE, y + HANDLE_SIZE, 0xFFFFFFFF);
@@ -107,12 +119,20 @@ public class EditorOverlay {
                     return true;
                 }
             }
-            if (mouseX >= closeBtnBounds[0] && mouseX < closeBtnBounds[1]) {
-                active = false;
-                propertyPanel = null;
-                selectedWidget = null;
-                Minecraft.getInstance().setScreen(null);
-                return true;
+            for (int i = 0; i < actionBtnBounds.length; i++) {
+                String[] actionLabels = {"Export", "Import", "✕"};
+                int aw = Minecraft.getInstance().font.width(actionLabels[i]) + 12;
+                if (mouseX >= actionBtnBounds[i] && mouseX < actionBtnBounds[i] + aw) {
+                    if (i == 0) exportLayout();
+                    else if (i == 1) importLayout();
+                    else if (i == 2) {
+                        active = false;
+                        propertyPanel = null;
+                        selectedWidget = null;
+                        Minecraft.getInstance().setScreen(null);
+                    }
+                    return true;
+                }
             }
         }
 
@@ -263,6 +283,32 @@ public class EditorOverlay {
             selectedWidget = w;
             if (propertyPanel != null) propertyPanel.setWidget(w);
         }
+    }
+
+    private static void exportLayout() {
+        Widget root = getRootScreen();
+        if (root == null) return;
+        String toml = LayoutSerializer.serialize(root);
+        Minecraft.getInstance().keyboardHandler.setClipboard(toml);
+    }
+
+    private static void importLayout() {
+        Widget root = getRootScreen();
+        if (root == null) return;
+        String clipboard = Minecraft.getInstance().keyboardHandler.getClipboard();
+        if (clipboard == null || clipboard.isEmpty()) return;
+        try {
+            Toml toml = new Toml().read(clipboard);
+            List<Toml> tables = toml.getTables("widget");
+            if (tables == null || tables.isEmpty()) return;
+            Widget parsed = LayoutLoader.parseWidget(tables.get(0));
+            root.getChildren().clear();
+            for (Widget child : parsed.getChildren()) {
+                root.addChild(child);
+            }
+            selectedWidget = null;
+            if (propertyPanel != null) propertyPanel.setWidget(null);
+        } catch (Exception ignored) {}
     }
 
     public static Widget getSelectedWidget() { return selectedWidget; }
